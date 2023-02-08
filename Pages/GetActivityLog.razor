@@ -1,0 +1,652 @@
+﻿
+@page "/"
+@attribute [Authorize(Roles = "Admin,User")]
+@using ActivityLogs.Data
+@inject ActivityLogService objActivityService
+@inject NavigationManager NavigationManager
+@inject ApplicationDbContext _db
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserInManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject IJSRuntime jsruntime
+@implements IDisposable
+@*<NavLink class="nav-link"  href="AddActivityLog">
+        <span class="oi oi-plus" aria-hidden="true"></span>AddNew
+    </NavLink>*@
+@{
+
+    var UserId =
+          SignInManager.Context.User.Claims.FirstOrDefault().Value;
+    var res = SignInManager.Context.User.Identity.Name;
+    //var  user = UserInManager.FindByIdAsync(UserId);
+
+
+}
+
+@if (UserId == "0d46f8b2-dafe-414b-9c82-a43e732ca558")
+{
+    @*<input type="button" @onclick="@cancelss"  <span class="oi oi-plus w3-small " aria-hidden="true"></span>            New Activity  />*@
+
+
+    <input type="button" id="aab" class="btn btn-primary" @onclick="@cancelss" value="New Activity" />
+    <style>
+        #b:hover {
+            color: white;
+        }
+    </style>
+    @*<NavLink class="nav-link" href="AddActivityLog">
+            <span class="oi oi-plus" aria-hidden="true"></span>AddNew
+        </NavLink>*@
+    @*<input type="button" id="aa" class="btn btn-primary" @onclick="Create" value="Search" />*@
+    @*<NavLink class="nav-link" href="AddActivityLog">
+            <span class="oi oi-plus" aria-hidden="true"></span>AddNew
+        </NavLink>*@
+
+    <br />
+    <br />
+
+
+
+
+    <br />
+    <div class="col-md-12">
+        <label for="fromDate" id="fromdate" class="control-label">From Date</label>
+        <input type="date" class="form-control "  placeholder="datePickerValue" @bind-value="objActivitys.fromDate" />
+        <label id="todate">To Date</label><br />
+        <input type="date" id="ToDate" class="form-control" placeholder="datePickerValue" @bind-value="objActivitys.ToDate" />
+        <label id="username">User Name</label>
+        <select class="form-control drop" @bind="Id">
+            <option value="">Please Select</option>
+            @foreach (var act in objactivityviewmodel)
+            {
+                <option value="@act.UserName">@act.UserName</option>
+
+            }
+        </select>
+        <input type="button" id="aa" class="btn btn-primary" @onclick="@Search" value="Search" />
+    </div>
+
+
+
+    <style>
+        input#aa {
+            margin-left: 90.1%;
+            margin-top: -63px;
+            /* height: 38px; */
+            width: 11%;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            box-sizing: border-box;
+            display: inline-block;
+            min-width: -0.5em;
+            padding: 0.2em 1em;
+            margin-left: 2px;
+            text-align: center;
+            text-decoration: none !important;
+            cursor: pointer;
+            *cursor: hand;
+            color: #333 !important;
+            border: 1px solid transparent;
+            border-radius: 2px;
+        }
+
+        label#todate {
+            position: absolute;
+            margin-top: -6.8%;
+            margin-left: 29.3%;
+        }
+
+        label#fromdate {
+            margin-bottom: 3px;
+            margin-left: -18px;
+        }
+
+        table.table.table-bordered {
+            margin-left: -4px;
+        }
+
+        .form-control[readonly] {
+            background-color: rgba(255,255,255,0.9);
+            opacity: 1;
+        }
+
+        button {
+            background-color: #1b6ec2;
+            height: 43px;
+            margin-left: -4px;
+            width: 133px;
+            border: 0px;
+        }
+
+        a#b {
+            color: white;
+        }
+
+        .sidebar {
+            width: 16%;
+        }
+
+        td#cols {
+            text-align: center;
+        }
+
+        select.form-control.drop {
+            width: 26%;
+            margin-left: 57.3%;
+            margin-top: -38px;
+            /* display: inline-block; */
+        }
+
+        .oi {
+            position: relative;
+            top: 2px;
+            display: inline-block;
+            speak: none;
+            font-family: Icons;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        input.btn.btn-danger {
+            margin-left: 75%;
+            margin-top: -63px;
+        }
+
+        /* .nav-link {
+            display: inline-block;
+            padding: 1rem;
+        }*/
+
+        input.form-control {
+            width: 269px;
+            margin-left: -19px;
+        }
+
+        input#ToDate {
+            margin-top: -61px;
+            margin-left: 28%;
+            width: 26%;
+        }
+
+        input#btn {
+            margin-top: -63px;
+            margin-left: 808px;
+            margin-top: -69px;
+        }
+
+        select#SEarching {
+            width: 263px;
+            margin-left: 523px;
+            margin-bottom: -90px;
+        }
+
+        input#btn {
+            margin-top: -63px;
+            margin-top: -66px;
+            margin-left: 796px;
+        }
+
+        input#btn-btns {
+            margin-left: 900px;
+            margin-bottom: -122px;
+        }
+
+        input#fromdate {
+            width: 26%;
+            margin-top: -14px;
+            margin-left: -19px;
+        }
+
+        tbody th, table.dataTable tbody td {
+            padding: 0px 0px;
+            text-align: center;
+        }
+
+        .main .top-row {
+            position: relative;
+            top: 0;
+        }
+
+        a.nav-link.linkss {
+            display: inline-block;
+        }
+
+        table.dataTable.no-footer {
+            border-bottom: 0px solid #111;
+        }
+
+        label#username {
+            position: absolute;
+            margin-top: -5.7%;
+            margin-left: 55.6%;
+        }
+
+        label#todate {
+            position: absolute;
+            margin-top: -5.7%;
+            margin-left: 27%;
+        }
+    </style>
+
+
+
+
+    <table class="table table-bordered" id="example">
+        <thead>
+            <tr>
+                <th>Activity Id</th>
+                <th>User Name</th>
+                <th>Project Name</th>
+                <th>Date</th>
+                <th>Activity Description</th>
+                <th>How I Feel?</th>
+                <th>Duration (Hours)</th>
+                <th>Priority</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (objActivity.Count == 0)
+            {
+            <td id="cols" colspan="7">
+                <h1>No data available in the table</h1>
+            </td>
+
+        }
+        else
+        {
+            @foreach (var emp in objActivity)
+            {
+                <tr>
+                    <td>@emp.ActivityId</td>
+                    <td>@emp.Id</td>
+                    <td>@emp.ProjectId</td>
+                    <td>@emp.Date.ToString("dd-MMM-yyyy")</td>
+                    <td>   <textarea asp-for="ActivityDescription" id="description" class="form-control" @bind="emp.ActivityDescription" readonly /></td>
+                    <td>@emp.HowIFeel</td>
+                    <td>@emp.Duration</td>
+                    <td>@emp.Value</td>
+                    <td>
+                        <a class="nav-link linkss" href="EditActivitylog/@emp.ActivityId">
+
+                            <span id="pencil" class="oi oi-pencil" aria-hidden="true"></span>
+                        </a>
+                        <a class="nav-link linkss" href="DeleteActivitylog/@emp.ActivityId">
+
+                            <span id="trash" class="oi oi-trash" aria-hidden="true"></span>
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <input type="button" id="aab" class="btn btn-primary" @onclick="@cancelss" value="New Activity" />
+
+        <style>
+            #bb:hover {
+                color: white;
+            }
+        </style>
+
+        <br />
+        <br />
+
+        <br />
+        <div class="row">
+            <div class="col-md-4">
+                <label for="fromDate" id="fromdate" class="control-label" >From Date</label>
+                <input type="date" class="form-control" id="fromdate" placeholder="datePickerValue" @bind-value="objActivityss.fromDate" />
+            </div>
+            <div class="col-md-4">
+                <label id="todate">To Date</label><br />
+                <input type="date" id="my" class="form-control" placeholder="datePickerValue" @bind-value="objActivityss.ToDate" />
+            </div>
+            <div class="col-md-4">
+                <label id="username">User Name</label>
+                <select id="usersearch" class="form-control drop" @bind="Id">
+                    <option value="">Please  Select</option>
+                    @foreach (var act in objactivityviewmodels)
+                    {
+                        <option value="@act.UserName">@act.UserName</option>
+
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <input type="button" id="btns" class="btn btn-primary" @onclick="@UserSearch" value="Search" />
+            </div>
+
+
+
+        </div>
+
+
+        <style>
+            td#cols {
+                text-align: center;
+            }
+
+            label#username {
+                position: absolute;
+                margin-top: 0.5%;
+                margin-left: -20.5%;
+            }
+
+            label {
+                display: inline-block;
+                margin-left: -1px;
+                margin-bottom: .5rem;
+            }
+
+            select#usersearch {
+                width: 77%;
+                margin-top: 30px;
+                margin-left: -76px;
+            }
+
+            .sidebar {
+                width: 16%;
+            }
+            label#fromdate {
+                margin-bottom: 20px;
+            }
+
+            button {
+                background-color: #1b6ec2;
+                height: 43px;
+                margin-left: -4px;
+                width: 133px;
+                border: 0px;
+            }
+
+            a#bb {
+                color: white;
+            }
+
+            input.form-control {
+                width: 235px;
+            }
+
+
+
+            input#ToDate {
+                margin-top: -63px;
+                margin-left: 257px;
+            }
+
+
+
+            input#btn-btns {
+                margin-left: 900px;
+                margin-bottom: -122px;
+            }
+
+
+            input.form-control {
+                width: 282px;
+                margin-top: -15px;
+                margin-left: 0px;
+            }
+
+            a#Adddact {
+                margin-bottom: -41px;
+            }
+
+            input#aa {
+                margin-left: 60%;
+                margin-top: -64px;
+            }
+
+            table#tabless {
+                margin-top: 32px;
+            }
+
+            a.nav-link.abc:hover {
+                display: inline-block;
+                color: #0366d6;
+            }
+
+            input#my {
+                margin-left: -40px;
+                margin-top: -3px;
+            }
+
+            table.dataTable.no-footer {
+                border-bottom: 0px solid #111;
+            }
+            input#btns {
+                margin-top: -65px;
+                margin-left: 288%;
+                width: 29.9%;
+            }
+            a.nav-link.linkss {
+                display: inline-block;
+            }
+
+            label#todate {
+                margin-left: -12%;
+            }
+
+            tbody th, table.dataTable tbody td {
+                padding: 0px 0px;
+                text-align: center;
+            }
+
+            table#tabless {
+                margin-left: -5px;
+            }
+
+            .form-control[readonly] {
+                background-color: rgba(255,255,255,0.9);
+                opacity: 1;
+            }
+
+            a.nav-link.abc {
+                display: inline-block;
+                /* color: #007bff; */
+                color: #0366d6;
+            }
+
+            .main .top-row {
+                position: relative;
+                top: 0;
+            }
+
+        </style>
+
+
+
+
+
+
+        <table class="table table-bordered" id="example">
+            <thead>
+                <tr>
+                    <th>Activity Id</th>
+                    <th>User Name</th>
+                    <th>Project Name</th>
+                    <th>Date</th>
+                    <th>Activity Description</th>
+                    <th>How I Feel?</th>
+                    <th>Duration (Hours)</th>
+                    <th>Priority</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @if (objActivity.Count == 0)
+                {
+                <td id="cols" colspan="7">
+                    <h1>No data available in the table</h1>
+                </td>
+
+            }
+            else
+            {
+                @foreach (var emp in objActivity)
+                {
+                    <tr>
+                        <td>@emp.ActivityId</td>
+                        <td>@emp.Id</td>
+                        <td>@emp.ProjectId</td>
+                        <td>@emp.Date.ToString("MM-dd-yyyy")</td>
+                        @*<td>@emp.ActivityDescription</td>*@
+                        <td>
+                            <textarea id="TextArea" rows="2" cols="20" @bind="@emp.ActivityDescription" readonly></textarea>
+
+                        </td>
+                        <td>@emp.HowIFeel</td>
+                        <td>@emp.Duration</td>
+                        <td>@emp.Value</td>
+                        @if (res == emp.Id)
+                        {
+                            <td>
+                                <a class="nav-link linkss" href="EditUserActivityLog/@emp.ActivityId">
+
+                                    <span class="oi oi-pencil" aria-hidden="true"></span>
+                                </a>
+                                <a class="nav-link linkss" href="UserDeleteActivityLog/@emp.ActivityId">
+
+                                    <span class="oi oi-trash" aria-hidden="true"></span>
+                                </a>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <a class="nav-link abc" @onclick="javascript">
+
+                                    <span class="oi oi-pencil abc" aria-hidden="true" d></span>
+                                </a>
+                                <a class="nav-link abc" @onclick="javascript">
+
+                                    <span class="oi oi-trash abc" aria-hidden="true"></span>
+                                </a>
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+
+                </tbody>
+            </table>
+        }
+
+
+
+
+@code {
+
+
+    [Parameter]
+    public string Id { get; set; }
+
+    List<Microsoft.AspNetCore.Identity.IdentityUser> objactivityviewmodels = new List<Microsoft.AspNetCore.Identity.IdentityUser>();
+    List<Microsoft.AspNetCore.Identity.IdentityUser> objactivityviewmodel = new List<Microsoft.AspNetCore.Identity.IdentityUser>();
+    List<ActivityLogs.Data.ActivityLog> objActivity = new List<ActivityLogs.Data.ActivityLog>();
+
+    ActivityLogs.Data.ActivityLog act = new ActivityLogs.Data.ActivityLog();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        objActivity = await Task.Run(() => objActivityService.GetActivityLog());
+        objactivityviewmodel = objActivityService.GetUsers();
+        objactivityviewmodels = objActivityService.GetsUsers();
+
+
+    }
+
+    ActivityLogs.Data.ActivityViewModel objActivitys = new ActivityLogs.Data.ActivityViewModel();
+    DateTime datePickerValue { get; set; } = DateTime.Now;
+    DateTime datePickerValue1 { get; set; } = DateTime.Now;
+    protected async Task Search()
+    {
+        try
+
+        {
+
+            objActivity = await objActivityService.Searchdate(objActivitys, Id);
+        }
+        catch (Exception ex)
+        {
+
+            throw ex;
+        }
+
+
+    }
+
+    ActivityLogs.Data.ActivityViewModel objActivityss = new ActivityLogs.Data.ActivityViewModel();
+    void UserSearch()
+    {
+        try
+
+        {
+
+            objActivity = objActivityService.SearchUserdate(objActivityss, Id);
+        }
+        catch (Exception ex)
+        {
+
+            throw ex;
+        }
+
+
+    }
+
+    ActivityLogs.Data.ActivityViewModel objActivityyy = new ActivityLogs.Data.ActivityViewModel();
+    ActivityLogs.Data.ActivityDto objActivityyyy = new ActivityLogs.Data.ActivityDto();
+    protected void Create()
+    {
+        objActivityService.AddActivityLog(objActivityyyy, Id);
+        NavigationManager.NavigateTo("/");
+    }
+    void cancel()
+
+    {
+        NavigationManager.NavigateTo("/");
+    }
+    void javascript()
+    {
+        jsruntime.InvokeVoidAsync("myFunction");
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await jsruntime.InvokeAsync<object>("TestDataTablesAdd", "#example");
+    }
+    void IDisposable.Dispose()
+    {
+        jsruntime.InvokeAsync<object>("TestDataTablesRemove", "#example");
+    }
+
+
+    void cancelss()
+
+    {
+        NavigationManager.NavigateTo("/AddActivityLog");
+
+    }
+
+    void AddUserActicity()
+
+    {
+        NavigationManager.NavigateTo("/AddUserActivityLog");
+
+    }
+
+
+
+
+}
+

@@ -1,0 +1,60 @@
+﻿@page "/getuseractivitylog/"
+@attribute [Authorize(Roles = "User")]
+@using Microsoft.AspNetCore.Identity
+@using ActivityLogs.Data
+@inject ActivityLogService objActivityService
+@inject NavigationManager NavigationManager
+@inject ApplicationDbContext _db
+@inject RoleManager<IdentityRole> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
+
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    List<Microsoft.AspNetCore.Identity.IdentityUser> objactivityviewmodel = new List<Microsoft.AspNetCore.Identity.IdentityUser>();
+    Microsoft.AspNetCore.Identity.IdentityRole role = new Microsoft.AspNetCore.Identity.IdentityRole();
+    List<ActivityLogs.Data.ActivityLog> objActivity = new List<ActivityLogs.Data.ActivityLog>();
+    ActivityLogs.Data.ActivityViewModel objActivityss = new ActivityLogs.Data.ActivityViewModel();
+    protected override async Task OnInitializedAsync()
+    {
+
+        objActivity = await Task.Run(() => objActivityService.GetUserActivityLog());
+        objactivityviewmodel= objActivityService.GetsUsers();
+
+    }
+
+
+
+
+    ActivityLogs.Data.ActivityViewModel objActivitys = new ActivityLogs.Data.ActivityViewModel();
+    DateTime datePickerValue { get; set; } = DateTime.Now;
+    DateTime datePickerValue1 { get; set; } = DateTime.Now;
+
+    void UserSearch()
+    {
+        try
+
+        {
+
+            objActivity = objActivityService.SearchUserdate(objActivitys,Id);
+        }
+        catch (Exception ex)
+        {
+
+            throw ex;
+        }
+
+
+    }
+
+
+
+
+
+
+}
+

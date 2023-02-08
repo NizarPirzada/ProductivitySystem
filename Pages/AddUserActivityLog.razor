@@ -1,0 +1,140 @@
+﻿@page "/AddUserActivitylog/"
+@attribute [Authorize(Roles = "User")]
+@using ActivityLogs.Data
+@using System.ComponentModel.DataAnnotations;
+@inject ActivityLogService objActivityService;
+@inject NavigationManager NavigationManager;
+
+<EditForm Model="@objActivity" OnValidSubmit="@CreateActivityLog">
+    <DataAnnotationsValidator />
+    <div class="row">
+        <div class="col-md-8">
+
+            <div class="form-group">
+                <label>Project Name</label>
+                <InputSelect class="form-control" Selected="true" @bind-Value="@objActivity.ProjectId">
+                    <option value="">Please Select</option>
+                    @foreach (var act in objactivityviewmodels)
+                    {
+                        <option value="@act.ProjectName">@act.ProjectName</option>
+
+                    }
+
+                </InputSelect>
+                <ValidationMessage For="@(() => objActivity.ProjectId)" />
+            </div>
+
+
+            <div class="form-group">
+                <label for="Date" class="control-label">Date</label>
+                <InputDate class="form-control" placeholder="datePickerValue" @bind-Value="objActivity.Date" />
+
+            </div>
+
+
+
+
+            <div class="form-group">
+                <label for="ActivityDescription" id="desc" class="control-label">Activity Description</label>
+                <InputTextArea asp-for="ActivityDescription" id="description" class="form-control" @bind-Value="objActivity.ActivityDescription" />
+                <ValidationMessage For="@(() => objActivity.ActivityDescription)" />
+            </div>
+
+
+            <div class="form-group">
+                <label for="HowIFeel" class="control-label">How I Feel?</label>
+                <InputSelect @bind-Value="objActivity.HowIFeel" class="form-control">
+                    <option value="">Please Select</option>
+                    <option value="Happy">Happy</option>
+                    <option value="Sad">Sad</option>
+                    <option value="Anger">Anger</option>
+                    <option value="Fear">Fear </option>
+                </InputSelect>
+                <ValidationMessage For="@(() => objActivity.HowIFeel)" />
+            </div>
+
+
+            <label for="Duration" class="control-label">Duration (Hours)</label>
+            <InputNumber asp-for="Duration" class="form-control" @bind-Value="objActivity.Duration" />
+            <ValidationMessage For="@(() => objActivity.Duration)" />
+            <div class="form-group">
+                <label for="Value" id="val" class="control-label">Priority</label>
+                <InputSelect @bind-Value="objActivity.Value" class="form-control">
+                    <option value="">Please Select</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                    <option value="None">None</option>
+
+                </InputSelect>
+                <ValidationMessage For="@(() => objActivity.Value)" />
+            </div>
+        </div>
+        </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" > Save </button>
+
+
+                @*<input type="submit" class="btn btn-danger" @onclick="@Create" value="Save" />*@
+                <input type="button" class="btn btn-danger" @onclick="@cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+
+</EditForm>
+<style>
+    textarea#description {
+        height: 63px;
+    }
+    label#val {
+        margin-top: 20px;
+    }
+    .main .top-row {
+        position: relative;
+        top: 0;
+    }
+    .sidebar {
+        width: 16%;
+    }
+</style>
+
+@code {
+
+
+
+
+    //List<Microsoft.AspNetCore.Identity.IdentityUser> objactivityviewmodel = new List<Microsoft.AspNetCore.Identity.IdentityUser>();
+    List<Project> objactivityviewmodels = new List<Project>();
+    [Parameter]
+    public string Id { get; set; }
+    DateTime datePickerValue { get; set; } = DateTime.Now;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        objactivityviewmodels = await Task.Run(() => objActivityService.GetProject());
+    }
+    Microsoft.AspNetCore.Identity.IdentityUser objactivityviewmodel = new Microsoft.AspNetCore.Identity.IdentityUser();
+    ActivityLogs.Data.ActivityViewModel objActivitys = new ActivityLogs.Data.ActivityViewModel();
+    ActivityLogs.Data.ActivityLog objActivity = new ActivityLogs.Data.ActivityLog();
+    ActivityLogs.Data.Project objActivitysss = new ActivityLogs.Data.Project();
+    protected void CreateActivityLog()
+    {
+
+
+        objActivityService.AddUserActivityLog(objActivity,Id);
+        NavigationManager.NavigateTo("/");
+    }
+    void cancel()
+
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+}
+
+
+

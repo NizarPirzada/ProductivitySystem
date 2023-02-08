@@ -1,0 +1,17 @@
+﻿@*@page "/search"
+@using ActivityLogs.Data
+@inject ActivityLogService objActivityService
+@inject SearchServices objServices
+@inject ApplicationDbContext _db
+@code {
+    List<ActivityLogs.Data.ActivityViewModel> objActivity = new List<ActivityLogs.Data.ActivityViewModel>();
+    protected override async Task OnInitializedAsync()
+    {
+
+        objActivity = await Task.Run(() => objServices.Searchdate(objActivity));
+
+    }
+
+
+}*@
+

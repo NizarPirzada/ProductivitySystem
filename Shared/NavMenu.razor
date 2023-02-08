@@ -1,0 +1,44 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <AuthorizeView>
+        <a id="actlog" class="navbar-brand" href="">Activity Log</a>
+        <button class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </AuthorizeView>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <AuthorizeView Roles="Admin">
+               <li class="nav-item px-3">
+                <NavLink class="nav-link" href="#">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span>Home
+                </NavLink>
+            </li>
+        </AuthorizeView>
+        <AuthorizeView Roles="User">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="#">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Home
+                </NavLink>
+            </li>
+        </AuthorizeView>
+    </ul>
+</div>
+<style>
+    a#actlog {
+        /* text-align: center; */
+        margin-left: 24px;
+    }
+</style>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

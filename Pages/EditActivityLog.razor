@@ -1,0 +1,139 @@
+﻿@page "/EditActivitylog/{CurrentId}"
+@attribute [Authorize(Roles = "Admin")]
+@using ActivityLogs.Data
+@inject ActivityLogService objActivityService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ApplicationDbContext context
+
+
+<EditForm Model="@objActivity" OnValidSubmit="@UpdateActivity">
+    <DataAnnotationsValidator />
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <InputSelect class="form-control" Selected="true" @bind-Value="@objActivity.Id">
+                    <option value="">UserName</option>
+                    @foreach (var act in objactivityviewmodel)
+                    {
+                        <option value="@act.UserName">@act.UserName</option>
+
+                    }
+
+                </InputSelect>
+                <ValidationMessage For="@(() => objActivity.Id)" />
+            </div>
+
+            <div class="form-group">
+                <InputSelect class="form-control" Selected="true" @bind-Value="@objActivity.ProjectId">
+                    <option value="">Project Name</option>
+                    @foreach (var act in objactivityviewmodels)
+                    {
+                        <option value="@act.ProjectName">@act.ProjectName</option>
+
+                    }
+
+                </InputSelect>
+                <ValidationMessage For="@(() => objActivity.ProjectId)" />
+            </div>
+
+            <div class="form-group">
+                <label for="Date" id="date" class="control-label">Date</label>
+                <InputDate class="form-control" placeholder="datePickerValue" @bind-Value="objActivity.Date" />
+
+                <ValidationMessage For="@(() => objActivity.Date)" />
+            </div>
+            <div class="form-group">
+                <label for="ActivityDescription" id="desc" class="control-label">Activity Description</label>
+                <InputTextArea asp-for="ActivityDescription" id="description" class="form-control" @bind-Value="objActivity.ActivityDescription" />
+                <ValidationMessage For="@(() => objActivity.ActivityDescription)" />
+            </div>
+
+            <div class="form-group">
+                <label for="HowIFeel" id="how" class="control-label">How I Feel?</label>
+                <InputSelect @bind-Value="objActivity.HowIFeel" class="form-control">
+                    <option value="">Select value</option>
+                    <option value="Happy">Happy</option>
+                    <option value="Sad">Sad</option>
+                    <option value="Anger">Anger</option>
+                    <option value="Fear">Fear </option>
+                </InputSelect>
+                <ValidationMessage For="@(() => objActivity.HowIFeel)" />
+                <style>
+
+                    label#val {
+                        margin-top: 18px;
+                    }
+                </style>
+            </div>
+
+
+            <label for="Duration" id="dur" class="control-label">Duration (Hours)</label>
+            <InputNumber asp-for="Duration" class="form-control" @bind-Value="objActivity.Duration" />
+            <ValidationMessage For="@(() => objActivity.Duration)" />
+            <div class="form-group">
+                <label for="Value" id="val" class="control-label">Priority</label>
+                <InputSelect @bind-Value="objActivity.Value" class="form-control">
+                    <option value="">Select value</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                    <option value="None">None</option>
+                </InputSelect>
+                <ValidationMessage For="@(() => objActivity.Value)" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary"> Save </button>
+
+
+                @*<input type="submit" class="btn btn-danger" @onclick="@Create" value="Save" />*@
+                <input type="button" class="btn btn-danger" @onclick="@cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+
+</EditForm>
+<style>
+    textarea#description {
+        height: 150px;
+    }
+    .main .top-row {
+        position: relative;
+        top: 0;
+    }
+    .sidebar {
+        width: 16%;
+    }
+</style>
+
+@code {
+    List<Microsoft.AspNetCore.Identity.IdentityUser> objactivityviewmodel = new List<Microsoft.AspNetCore.Identity.IdentityUser>();
+
+    List<Project> objactivityviewmodels = new List<Project>();
+    DateTime datePickerValue { get; set; } = DateTime.Now;
+    [Parameter]
+    public string CurrentId { get; set; }
+    ActivityLogs.Data.ActivityLog objActivity = new ActivityLogs.Data.ActivityLog();
+    protected override async Task OnInitializedAsync()
+    {
+        objActivity = await Task.Run(() => objActivityService.ActivityLogDetails(Convert.ToInt32(CurrentId)));
+        objactivityviewmodel = await Task.Run(() => objActivityService.GetUsers());
+        objactivityviewmodels = objActivityService.GetProject();
+    }
+    protected void UpdateActivity()
+    {
+        objActivityService.EditActivityLog(objActivity);
+        NavigationManager.NavigateTo("/");
+    }
+    void cancel()
+
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}
+
